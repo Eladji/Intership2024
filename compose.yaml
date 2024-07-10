@@ -1,29 +1,59 @@
+
 services:
-  web:
-    image: nginx
-    volumes:
-      - ./nginx/nginx.conf:/tmp/nginx.conf
-    environment: 
-      - FLASK_SERVER_ADDR=backend:9091  
-    command: /bin/bash -c "envsubst < /tmp/nginx.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
+  flask:
+    build: ./flask
     ports:
-      - 80:80
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
     depends_on:
+      - mongo
+    networks:
       - backend
 
-  backend:
-    build:
-      context: flask
-      target: builder
-    # flask requires SIGINT to stop gracefully
-    # (default stop signal from Compose is SIGTERM)
-    stop_signal: SIGINT
-    environment:
-      - FLASK_SERVER_PORT=9091
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
     volumes:
-      - ./flask:/src
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      -  mongo  
+      - flask
+    networks:
+      - backend
 
   mongo:
-    image: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=tutel
+    #   - MONGO_INITDB_ROOT_PASSWORD=7yP;g94v!W`/(;l44T
+
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: tutel
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: 7yP%3Bg94v!W%60%2F(%3Bl44T
+      ME_CONFIG_BASICAUTH: TRUE
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+
+networks:
+  backend: 
+
+volumes:
+  mongo-data:
