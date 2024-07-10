@@ -1,8 +1,17 @@
-from flask import request, jsonify
+from flask import request, jsonify, abort
 from app import app, mongo
 from app.Model import User, Trip
 from bson.objectid import ObjectId
 from datetime import datetime
+
+VALID_API_KEYS = {"qb9luXtdMCqR7Bqy"}  # Define your valid API keys
+
+@app.before_request
+def require_api_key():
+    if 'X-API-KEY' not in request.headers or request.headers['X-API-KEY'] not in VALID_API_KEYS:
+        # If the API key is missing or not valid, return an unauthorized error
+        abort(jsonify({"error": "Unauthorized"}), 401)
+
 
 @app.route('/users', methods=['POST'])
 def create_user():

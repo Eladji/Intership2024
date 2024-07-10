@@ -23,20 +23,19 @@ def init_db(app):
         if 'users' not in db.list_collection_names():
             db.create_collection('users')
             print("Created 'users' collection")
-            
-            db.users.create_index("email", unique=True)
-            db.users.create_index("hire_date")
-            db.users.create_index("birth_date")
-            db.users.create_index("first_name")
-            db.users.create_index("last_name")
-            db.users.create_index("password")
+            db.users.create_index("username", unique=True, required=True)
+            db.users.create_index("email", unique=True, required=True)
+            db.users.create_index("hire_date", required=True)
+            db.users.create_index("birth_date", required=True)
+            db.users.create_index("first_name", required=True)
+            db.users.create_index("last_name", required=True)
+            db.users.create_index("password", required=True)
    
         if 'trip' not in db.list_collection_names():
             db.create_collection('trip')
             print("Created 'trip' collection")
             
             db.trip.create_index("user_id")
-  
             db.trip.create_index("start_date")
             db.trip.create_index("end_date")
             db.trip.create_index("position_dot")
