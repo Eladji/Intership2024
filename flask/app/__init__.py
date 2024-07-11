@@ -44,6 +44,7 @@ def init_db(app):
         if 'api_key' not in db.list_collection_names():
             db.create_collection('api_key')
             db.key.create_index("key", unique=True)
+            db.key.create_index("user_id")
             db.key.create_index("expiration_time", expireAfterSeconds=86400 )
             print("Created 'key' collection")
     except Exception as e:
