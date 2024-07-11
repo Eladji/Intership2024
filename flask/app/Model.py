@@ -1,7 +1,9 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import secrets
+import pytz
+timezone = pytz.timezone("Europe/Paris")
 class BaseModel:
     def __init__(self, db, collection_name):
         self.collection = db[collection_name]
@@ -75,3 +77,32 @@ class Trip(BaseModel):
             "distance": distance
         }
         return self.create(trip_data)
+
+class API_KEY(BaseModel):
+    def __init__(self, db):
+        super().__init__(db, "api_key")
+    def generate_api_key(self):
+        # Generate a secure, random key using the secrets module
+        key = secrets.token_urlsafe(32)  # Generates a 32-byte (256-bit) key
+        # Truncate or format the key if necessary (optional)
+        # key = key[:50]  # Example: Truncate to 50 characters if needed
+        # Create the API key in the database with an expiration time
+        expiration_time = datetime.now() + timedelta(days=1)  # Set expiration to 1 day from now
+        
+        key_data = {
+            "key": key,
+            "expiration_time": expiration_time  # Set expiration to 1 day from now
+        }
+        self.create(key_data)
+        return key
+    
+    def is_api_key_valid(self, key:str):
+        
+     result = self.read_one({"key": key})
+     print(f"Debug: read_one result for key '{key}': {result}")  # Debugging line
+     if result:
+        return True
+     else:
+        return False
+    
+    

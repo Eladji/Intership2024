@@ -1,30 +1,67 @@
 from flask import request, jsonify, abort
 from app import app, mongo
-from app.Model import User, Trip
+from app.Model import User, Trip, API_KEY
 from bson.objectid import ObjectId
 from datetime import datetime
-
+from flask_bcrypt import Bcrypt
 VALID_API_KEYS = {"qb9luXtdMCqR7Bqy"}  # Define your valid API keys
-
+bcrypt = Bcrypt(app)
 @app.before_request
 def require_api_key():
-    if 'X-API-KEY' not in request.headers or request.headers['X-API-KEY'] not in VALID_API_KEYS:
-        # If the API key is missing or not valid, return an unauthorized error
-        abort(jsonify({"error": "Unauthorized"}), 401)
+    open_endpoints = ['login', 'register']
+    if request.endpoint in open_endpoints:
+        return  # Allow the request for open endpoints
+    if 'X-API-KEY' in request.headers:
+        apikey = API_KEY(mongo.db)
+        if apikey.is_api_key_valid(request.headers['X-API-KEY']):
+            return  # Allow the request if the API key is valid
+        else:
+            abort(jsonify({"error": "Unauthorized"}), 401)  # Abort if the API key is invalid
+    else:
+        abort(jsonify({"error": "Unauthorized"}), 401)  # Abort if the API key is missing
+        
+@app.route('/login', methods=['POST'], endpoint='login')
+def login():
+    data = request.get_json()
+    required_fields = ["email", "password"]
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Missing fields"}), 400
+    user = User(mongo.db)
+    user_data = user.read_one({"email": data["email"]})
+    
+    if user_data and bcrypt.check_password_hash(user_data["password"], data["password"]):
+        apikey = API_KEY(mongo.db)
+        user_data['_id'] = str(user_data['_id'])
+        user_data.pop("password")  # Corrected from user_data.pop["password"]
+        # Correctly add API_KEY and message to the user_data dictionary
+        user_data["API_KEY"] = apikey.generate_api_key()  # Corrected from user_data.append[{"API_KEY": apikey.generate_api_key()}]
+        user_data["message"] = "User logged in"  # Corrected from user_data.append[{"message": "User logged in"}]
+        return jsonify(user_data), 200
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
 
-
-@app.route('/users', methods=['POST'])
+@app.route('/register', methods=['POST'], endpoint='register')
 def create_user():
     data = request.get_json()
-    required_fields = ["email", "password", "first_name", "last_name", "hire_date", "birth_date"]
+    required_fields = ["email", "password", "first_name", "last_name", "hire_date", "birth_date", "username"]
     
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing fields"}), 400
     
+    hashed_password = bcrypt.generate_password_hash(data["password"]).decode('utf-8')
+    
     user = User(mongo.db)
+    #check if email or username already exists
+    if (user.read_one({"email": data["email"]})):
+        return jsonify({"error": "Email already exists"}), 400
+    if (user.read_one({"username": data["username"]})):
+        return jsonify({"error": "Username already exists"}), 400
+    
     user.create_user(
         email=data["email"],
-        password=data["password"],
+        password=hashed_password,
+        username=data["username"],
         first_name=data["first_name"],
         last_name=data["last_name"],
         hire_date=data["hire_date"],
@@ -46,6 +83,13 @@ def get_users():
 def get_user_by_id(user_id):
     user = User(mongo.db)
     user = user.read_one({"_id": ObjectId(user_id)})
+    user['_id'] = str(user['_id'])
+    return jsonify(user), 200
+
+@app.route('/users/<username>', methods=['GET'])
+def get_user_by_username(username):
+    user = User(mongo.db)
+    user = user.read_one({"username": username})
     user['_id'] = str(user['_id'])
     return jsonify(user), 200
 

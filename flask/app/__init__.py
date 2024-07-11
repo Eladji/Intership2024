@@ -23,13 +23,13 @@ def init_db(app):
         if 'users' not in db.list_collection_names():
             db.create_collection('users')
             print("Created 'users' collection")
-            db.users.create_index("username", unique=True, required=True)
-            db.users.create_index("email", unique=True, required=True)
-            db.users.create_index("hire_date", required=True)
-            db.users.create_index("birth_date", required=True)
-            db.users.create_index("first_name", required=True)
-            db.users.create_index("last_name", required=True)
-            db.users.create_index("password", required=True)
+            db.users.create_index("username", unique=True)
+            db.users.create_index("email", unique=True)
+            db.users.create_index("hire_date")
+            db.users.create_index("birth_date")
+            db.users.create_index("first_name")
+            db.users.create_index("last_name")
+            db.users.create_index("password")
    
         if 'trip' not in db.list_collection_names():
             db.create_collection('trip')
@@ -41,7 +41,12 @@ def init_db(app):
             db.trip.create_index("position_dot")
             db.trip.create_index("Is_done")
             db.trip.create_index("distance")
+        if 'api_key' not in db.list_collection_names():
+            db.create_collection('api_key')
+            db.key.create_index("key", unique=True)
+            db.key.create_index("expiration_time", expireAfterSeconds=86400 )
+            print("Created 'key' collection")
     except Exception as e:
         print("Error initializing database:", e)
-    return    "Database initialized"
+    return    print("Database initialized")
 init_db(app)
