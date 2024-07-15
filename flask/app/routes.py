@@ -35,7 +35,7 @@ def login():
         user_data['_id'] = str(user_data['_id'])
         user_data.pop("password")  # Corrected from user_data.pop["password"]
         # Correctly add API_KEY and message to the user_data dictionary
-        user_data["API_KEY"] = apikey.generate_api_key()  # Corrected from user_data.append[{"API_KEY": apikey.generate_api_key()}]
+        user_data["API_KEY"] = apikey.generate_api_key(user_data["_id"])  # Corrected from user_data.append[{"API_KEY": apikey.generate_api_key()}]
         user_data["message"] = "User logged in"  # Corrected from user_data.append[{"message": "User logged in"}]
         return jsonify(user_data), 200
     else:

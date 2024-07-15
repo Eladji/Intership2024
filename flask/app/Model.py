@@ -57,10 +57,10 @@ class User(BaseModel):
 class Trip(BaseModel):
     def __init__(self, db):
         super().__init__(db, "trip")
-    def create_trip(self, user_id: str,  start_date:str, end_date: str, position_dot: int, Is_done: bool, distance: int):
+    def create_trip(self, user_id: str, start_date: str, end_date: str, position_dot: int, Is_done: bool, distance: int):
         max_distance = 1100  # Example maximum distance
         distance = min(distance, max_distance)
-        position_dot = min(position_dot, 100)  # Example maximum for position_dot
+        position_dot = min(int(position_dot), 100)  # Convert position_dot to int before comparison
 
         # Convert strings to datetime, ensuring start_date is before end_date and neither are in the future
         now = datetime.now()
@@ -72,7 +72,7 @@ class Trip(BaseModel):
             "user_id": ObjectId(user_id),
             "start_date": datetime.strptime(start_date, '%Y-%m-%d-%H:%M:%S'),
             "end_date": datetime.strptime(end_date, '%Y-%m-%d-%H:%M:%S'),
-            "position_dot" : position_dot,
+            "position_dot": position_dot,
             "Is_done": Is_done,
             "distance": distance
         }
@@ -83,7 +83,7 @@ class API_KEY(BaseModel):
         super().__init__(db, "api_key")
     def generate_api_key(self, user_id: str):
         #to check if the user already has an api key
-        check_user = self.find_one({"user_id": ObjectId(user_id)})
+        check_user = self.read_one({"user_id": ObjectId(user_id)})
         if check_user:
             return check_user["key"]
         else:
