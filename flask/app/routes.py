@@ -4,7 +4,7 @@ from app.Model import User, Trip, API_KEY
 from bson.objectid import ObjectId
 from datetime import datetime
 from flask_bcrypt import Bcrypt
-VALID_API_KEYS = {"qb9luXtdMCqR7Bqy"}  # Define your valid API keys
+
 bcrypt = Bcrypt(app)
 @app.before_request
 def require_api_key():
@@ -100,7 +100,7 @@ def update_user(user_id):
     update_data = {key: value for key, value in data.items() if key in ["email", "password", "first_name", "last_name", "hire_date", "birth_date"]}
 
     if 'hire_date' in update_data:
-        update_data['hire_date'] = datetime.strptime(update_data['hire_date'], '%Y-%m-%d')
+        update_data['hire_date'] = datetime.strptime(update_data['hire_date'], '%Y-%m-%d-%H:%M')
     if 'birth_date' in update_data:
         update_data['birth_date'] = datetime.strptime(update_data['birth_date'], '%Y-%m-%d')
     user.update({"_id": ObjectId(user_id)}, update_data)

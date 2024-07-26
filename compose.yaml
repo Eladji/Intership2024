@@ -52,7 +52,25 @@ services:
       - mongo
     networks:
       - backend
-
+  
+  frontend_server:
+    build:
+      context: frontend
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /frontend
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
+    networks:
+      - backend
 
 networks:
   backend: 

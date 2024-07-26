@@ -3,3 +3,8 @@ Flask-PyMongo
 Flask-Bcrypt
 python-dotenv
 pytz
+pandas 
+geopandas 
+folium 
+scikit-learn
+joblib
