@@ -29,14 +29,17 @@ class MainActivity : AppCompatActivity() {
 
         connect.setOnClickListener(View.OnClickListener { view : View ->
             error.visibility = View.GONE
-            println("Hi")
+            // requette : blabla/json/email password
+            //200 -> ok
+            // -> pas ok
             val txtemail = email.text.toString()
             val txtpassword = password.text.toString()
             if (txtemail.trim().isEmpty() || txtpassword.trim().isEmpty()){
                 error.text = "Vous devez remplire tout les champs"
                 error.visibility = View.VISIBLE
             }else{
-                if(txtemail.trim() == "a" && txtpassword.trim() == "a"){
+                if(txtemail.trim() == "a" && txtpassword.trim() == "a"){ // 200
+                    //build la classe pd
                     Intent(this, HomeActivity::class.java).also {
                         it.putExtra("email", txtemail)
                         startActivity(it)
