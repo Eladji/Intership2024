@@ -6,7 +6,7 @@ import folium
 import joblib
 from tqdm import tqdm
 from joblib import Parallel, delayed
-
+from Model import relay_point
 # Path to cache files
 cache_file_boundaries = 'france_boundaries_cache.pkl'
 cache_file_city = 'city_cache.pkl'
@@ -97,6 +97,8 @@ def add_markers_to_map(gdf, cluster_centers, city_coordonne, city_names, m):
                 popup=f'Relay Point {idx + 1}: {closest_city_name}',
                 icon=folium.Icon(color='red')
             ).add_to(m)
+        relay_point.create_relay_point("name", closest_city_name, closest_city_name, "phone", "email", "opening_hours", "image")
+        #save relay point in the database
 
 add_markers_to_map(gdf_deliveries, cluster_centers, city_coordonne, city_names, m)
 
