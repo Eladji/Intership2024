@@ -1,0 +1,46 @@
+body{
+    background-color: rgb(182, 216, 209);
+}
+
+
+h2{
+    color: white;
+    font-size: 30px;
+    font-weight: 700;
+    flex: 1 1 auto ;
+}
+
+/* Basic header styling */
+header {
+  display: flex;
+    justify-content: space-between;
+    background-color: rgb(71, 122, 105);
+    color: white; /* White text color */
+    padding: 20px; /* Space around the content */
+    text-align: center; /* Center align text */
+    font-family: Arial, sans-serif; /* Font style */
+  }
+  
+  /* Header title */
+  header h1 {
+    margin: 0; /* Remove default margin */
+    font-size: 2.5em; /* Larger font size for the title */
+  }
+  header nav {
+    flex-direction: row-reverse;
+    align-items: center;
+    background-color: rgb(71, 122, 105);
+    padding: 10px;
+  }
+  /* Header navigation links */
+  header nav a {
+    color: white; /* Link color */
+    text-decoration: none; /* Remove underline */
+    margin: 0 15px; /* Space between links */
+    font-size: 1.2em; /* Slightly larger text for links */
+  }
+  
+  header nav a:hover {
+    text-decoration: underline; /* Underline on hover */
+  }
+  

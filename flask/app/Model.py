@@ -110,4 +110,25 @@ class API_KEY(BaseModel):
      else:
         return False
     
-    
+class relay_point(BaseModel):
+    def __init__(self, db):
+        super().__init__(db, 'relay_point')
+    def create_relay_point(self, name:str, location:str, address:str, phone:str, email:str, opening_hours:str):
+        max_length = 50
+        name = name[:max_length]
+        location = location[:max_length]
+        address = address[:max_length]
+        phone = phone[:max_length]
+        email = email[:max_length]
+        opening_hours = opening_hours[:max_length]
+        image = image[:max_length]
+        relay_point_data = {
+            "name": name,
+            "location": location,
+            "address": address,
+            "phone": phone,
+            "email": email,
+            "opening_hours": opening_hours,
+          
+        }
+        return self.create(relay_point_data)

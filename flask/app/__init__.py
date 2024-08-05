@@ -41,12 +41,25 @@ def init_db(app):
             db.trip.create_index("position_dot")
             db.trip.create_index("Is_done")
             db.trip.create_index("distance")
+            
         if 'api_key' not in db.list_collection_names():
             db.create_collection('api_key')
             db.key.create_index("key", unique=True)
             db.key.create_index("user_id")
             db.key.create_index("expiration_time", expireAfterSeconds=86400 )
             print("Created 'key' collection")
+            
+        if 'relay_points' not in db.list_collection_names():
+            db.create_collection('relay_points')
+            print("Created 'relay_points' collection")
+            db.relay_points.create_index("name")
+            db.relay_points.create_index("location")
+            db.relay_points.create_index("address")
+            db.relay_points.create_index("phone")
+            db.relay_points.create_index("email")
+            db.relay_points.create_index("opening_hours")
+    
+            
     except Exception as e:
         print("Error initializing database:", e)
     return    print("Database initialized")

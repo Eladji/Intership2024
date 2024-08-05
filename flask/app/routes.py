@@ -1,14 +1,15 @@
-from flask import request, jsonify, abort
+from flask import request, jsonify, abort, send_file
 from app import app, mongo
 from app.Model import User, Trip, API_KEY
 from bson.objectid import ObjectId
 from datetime import datetime
 from flask_bcrypt import Bcrypt
-
+from flask_cors import CORS
+CORS(app)
 bcrypt = Bcrypt(app)
 @app.before_request
 def require_api_key():
-    open_endpoints = ['login', 'register']
+    open_endpoints = ['login', 'register', 'map', 'get_map']
     if request.endpoint in open_endpoints:
         return  # Allow the request for open endpoints
     if 'X-API-KEY' in request.headers:
@@ -112,6 +113,9 @@ def delete_user(user_id):
     user.delete({"_id": ObjectId(user_id)})
     return jsonify({"message": "User deleted"}), 200
 
+@app.route('/map')
+def get_map():
+    return send_file('relay_points_map.html'), 200
 
 
 @app.route('/trips', methods=['POST'])
@@ -171,3 +175,13 @@ def delete_trip(trip_id):
     trip = Trip(mongo.db)
     trip.delete({"_id": ObjectId(trip_id)})
     return jsonify({"message": "Trip deleted"}), 200
+
+@app.route('/relay_points', methods=['GET'])
+def get_relay_points():
+    relay_points = mongo.db.relay_points.find({})
+    result = []
+    for point in relay_points:
+        point['_id'] = str(point['_id'])
+        result.append(point)
+    return jsonify(result), 200
+
