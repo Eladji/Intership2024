@@ -30,6 +30,7 @@ def init_db(app):
             db.users.create_index("first_name")
             db.users.create_index("last_name")
             db.users.create_index("password")
+            db.users.create_index("Position")
    
         if 'trip' not in db.list_collection_names():
             db.create_collection('trip')
@@ -52,13 +53,8 @@ def init_db(app):
         if 'relay_points' not in db.list_collection_names():
             db.create_collection('relay_points')
             print("Created 'relay_points' collection")
-            db.relay_points.create_index("name")
             db.relay_points.create_index("location")
-            db.relay_points.create_index("address")
-            db.relay_points.create_index("phone")
-            db.relay_points.create_index("email")
-            db.relay_points.create_index("opening_hours")
-    
+         
             
     except Exception as e:
         print("Error initializing database:", e)

@@ -27,7 +27,7 @@ class User(BaseModel):
     def __init__(self, db):
         super().__init__(db, "users")
 
-    def create_user(self, username:str ,email:str, password:str, first_name:str, last_name:str, hire_date:str, birth_date:str):
+    def create_user(self, username:str ,email:str, password:str, first_name:str, last_name:str, hire_date:str, birth_date:str, Position:float = [0,0]):
         max_length = 50
         max_length_name = 10
         max_length_password = 160
@@ -36,6 +36,7 @@ class User(BaseModel):
         password = password[:max_length_password]
         first_name = first_name[:max_length_name]
         last_name = last_name[:max_length_name]
+        Position = Position
 
         # Convert strings to datetime, ensuring they are not in the future
         now = datetime.now()
@@ -49,7 +50,8 @@ class User(BaseModel):
             "first_name": first_name,
             "last_name": last_name,
             "hire_date": datetime.strptime(hire_date, '%Y-%m-%d-%H:%M'),
-            "birth_date": datetime.strptime(birth_date, '%Y-%m-%d')
+            "birth_date": datetime.strptime(birth_date, '%Y-%m-%d'),
+            "Position": Position,
         }
         return self.create(user_data)
 
@@ -113,22 +115,22 @@ class API_KEY(BaseModel):
 class relay_point(BaseModel):
     def __init__(self, db):
         super().__init__(db, 'relay_point')
-    def create_relay_point(self, name:str, location:str, address:str, phone:str, email:str, opening_hours:str):
+    def create_relay_point(self, name:str, location:int):
+       if self.dedublicate_relay_check(name):
+           return False
+       else:
         max_length = 50
         name = name[:max_length]
-        location = location[:max_length]
-        address = address[:max_length]
-        phone = phone[:max_length]
-        email = email[:max_length]
-        opening_hours = opening_hours[:max_length]
-        image = image[:max_length]
+        location = location
+       
         relay_point_data = {
-            "name": name,
             "location": location,
-            "address": address,
-            "phone": phone,
-            "email": email,
-            "opening_hours": opening_hours,
-          
+            
         }
         return self.create(relay_point_data)
+    def dedublicate_relay_check(self, location:str):
+        result = self.read_one({"location": location})
+        if result:
+            return True
+        else:
+            return False

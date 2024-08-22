@@ -9,3 +9,6 @@ folium
 scikit-learn
 joblib
 Flask-Cors
+requests
+pycuda
+numpy

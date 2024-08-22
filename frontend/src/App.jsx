@@ -1,19 +1,13 @@
 
 import Header from './header/header.jsx'
-import Map from './map/map.jsx'
+import MyMap from './map/map.jsx'
 
 function App() {
-
-
-
-
-
-
   return (
     <>
         
     <Header/>
-    <Map/>
+    <MyMap/>
     </>
   )
 }

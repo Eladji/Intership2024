@@ -12,6 +12,21 @@ services:
       - backend
     volumes:
       - ./flask:/app
+  gpu_service:
+    build:
+      context: ./gpu_service
+      dockerfile: Dockerfile
+    runtime: nvidia  # This line ensures the service has access to the GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    volumes:
+      - ./gpu_service:/app
+    environment:
+      - ENV_VAR=example_value
+    command: python3 gpu_app.py
 
   nginx:
     image: nginx:latest

@@ -5,11 +5,12 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from ml_model import generate_relay_points
 CORS(app)
 bcrypt = Bcrypt(app)
 @app.before_request
 def require_api_key():
-    open_endpoints = ['login', 'register', 'map', 'get_map']
+    open_endpoints = ['login', 'register', 'map', 'get_map','relay_points/generate','relay_points']
     if request.endpoint in open_endpoints:
         return  # Allow the request for open endpoints
     if 'X-API-KEY' in request.headers:
@@ -185,3 +186,10 @@ def get_relay_points():
         result.append(point)
     return jsonify(result), 200
 
+@app.route('/relay_points/generate', methods=['POST'])
+def generate_relay():
+    relay_points = generate_relay_points()
+    if relay_points:
+        return jsonify({"message": "Relay points generated"}), 200
+    else:
+        return jsonify({"error": "Error generating relay points"}), 500
